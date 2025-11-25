@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# YT-DLP Batch Downloader Script v2.0
+# YT-DLP Batch Downloader Script
 # Usage: ./script.sh <batch_file> [download_location]
 
 # Colors for output
@@ -49,13 +49,12 @@ TOTAL_COUNT=${#URLS[@]}
 
 echo ""
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}   YT-DLP Batch Downloader v2.0${NC}"
+echo -e "${BLUE}   YT-DLP Batch Downloader Started${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 echo -e "${YELLOW}Batch file:${NC} $BATCH_FILE"
 echo -e "${YELLOW}Download location:${NC} $DOWNLOAD_DIR"
 echo -e "${YELLOW}Total URLs found:${NC} $TOTAL_COUNT"
-echo -e "${YELLOW}Features:${NC} Hebrew subs, Chapters, Thumbnails, Metadata, Resume support"
 echo ""
 
 # Preview first few records
@@ -104,28 +103,13 @@ for i in "${!URLS[@]}"; do
 
   echo -e "${BLUE}[$(date '+%H:%M:%S')]${NC} Processing [$((i + 1))/$TOTAL_COUNT]: $URL"
 
-  # Download with Hebrew subtitles, auto-translation, chapter support, and resume capability
+  # Try to download
   yt-dlp \
     --no-playlist \
     --output "$DOWNLOAD_DIR/%(title)s.%(ext)s" \
     --no-mtime \
     --progress \
     --write-description \
-    --write-subs \
-    --write-auto-subs \
-    --sub-langs "he.*,en.*" \
-    --convert-subs srt \
-    --embed-subs \
-    --embed-chapters \
-    --embed-thumbnail \
-    --embed-metadata \
-    --add-metadata \
-    --sponsorblock-mark all \
-    --no-overwrites \
-    --continue \
-    --retries 10 \
-    --fragment-retries 10 \
-    --retry-sleep 5 \
     "$URL" 2>&1
 
   STATUS=$?
@@ -142,19 +126,11 @@ for i in "${!URLS[@]}"; do
     echo ""
     if [ ${#TITLES[@]} -eq 1 ]; then
       echo -e "${GREEN}✓ Success:${NC} ${TITLES[0]}"
-      echo -e "  ${BLUE}Subtitles:${NC} Hebrew + Auto-translated (embedded)"
-      echo -e "  ${BLUE}Chapters:${NC} Preserved in video"
-      echo -e "  ${BLUE}Thumbnail:${NC} Embedded as cover art"
-      echo -e "  ${BLUE}Metadata:${NC} Title, author, date tagged"
     else
       echo -e "${GREEN}✓ Success:${NC} Downloaded ${#TITLES[@]} items:"
       for t in "${TITLES[@]}"; do
         echo "   - $t"
       done
-      echo -e "  ${BLUE}Subtitles:${NC} Hebrew + Auto-translated (embedded)"
-      echo -e "  ${BLUE}Chapters:${NC} Preserved in videos"
-      echo -e "  ${BLUE}Thumbnails:${NC} Embedded as cover art"
-      echo -e "  ${BLUE}Metadata:${NC} Fully tagged"
     fi
 
     # Store each title as its own entry
@@ -214,7 +190,6 @@ if [ $SUCCESS_COUNT -gt 0 ]; then
 
     echo -e "  ${GREEN}✓${NC} $TITLE"
     echo -e "    ${BLUE}Location:${NC} $LOCATION"
-    echo -e "    ${BLUE}Features:${NC} Hebrew subs, Chapters, Thumbnail, Metadata, Resume-safe"
   done
   echo ""
 fi
